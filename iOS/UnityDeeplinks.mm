@@ -11,9 +11,6 @@
 // Include Unity types from the Unity app itself:
 #import "AppDelegateListener.h"
 
-//
-#define UNITYDEEPLINKS_DEEPLINK_METHOD "onDeeplink"
-
 
 
 extern "C" {
