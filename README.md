@@ -18,7 +18,7 @@ public void onDeeplink(string deeplink) {
 There are two alternatives to handle a deeplink by a Unity app, depending on how your Unity project is currently built. It's up to you to decide which way to go.
 
 ### Alternative 1: Subclassing UnityPlayerActivity
-In this approach, you use a subclass of the default *UnityPlayerActivity*, which contains deeplink-handling code that marshals deeplinks into your Unity script. This is more recommended approach, as it is the least complex. If you have no previous plans to subsclass UnityPlayerActivity, it's a good approach because then the subclassed code would not conflict with anything. If you do have plans to subclass UnityPlayerActivity, however, it would usually also be a good approach as the code changes you need to make are minimal. You will have to use the provided *MyUnityPlayerActivity* subclass as follows:
+In this approach, you use a subclass of the default *UnityPlayerActivity*, which contains deeplink-handling code that marshals deeplinks into your Unity script. This is the recommended approach, as it is the least complex. If you have no previous plans to subsclass UnityPlayerActivity, it's a good approach because then the subclassed code would not conflict with anything. If you do have plans to subclass UnityPlayerActivity, however, it would usually also be a good approach as the code changes you need to make are minimal. You will have to use the provided *MyUnityPlayerActivity* subclass as follows:
 
 * Replace the default UnityPlayerActivity in your Assets/Plugins/Android/AndroidManifest.xml with com.trophit.MyUnityPlayerActivity:
 
