@@ -123,3 +123,47 @@ UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityD
 
 * Open the web page on the device browser and click the deeplink
 * The Unity app should open and the onDeeplink Unity script method should be invoked, performing whatever it is you designed it to perform
+
+# Special Cases
+
+## AppsFlyer
+AppsFlyer already provides some implementation for iOS and Android to handle deeplinks. However, it does not behave consistently for iOS and Android:
+* For iOS, it triggers the *onAppOpenAttribution* method in the *AppsFlyerTrackerCallbacks* script
+* For Android, it does not trigger any Unity script method
+
+Fortunately, AppsFlyer provides an implementation similar to Alternative #2 above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
+* Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
+* Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
+```
+// this.startActivity(newIntent);
+String deeplink = getIntent().getDataString();
+if (deeplink != null) {
+    try {
+        org.json.JSONObject jo = new org.json.JSONObject();
+        jo.put("link", getIntent().getDataString());
+        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
+    } catch (org.json.JSONException ex) {
+        Log.e(TAG, "Unable to send deeplink to Unity", ex);
+    }
+}
+// finish()
+```
+* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
+* Ensure, like with UnityDeeplink's *build_jar.sh* that all paths are set correctly
+* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
+`./build_plugin_jar.sh`
+
+* Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
+`{"link":"deeplink url comes here"}`
+
+Here's an example of an implementation which simply lets AppsFlyer track the deeplink activation along with its JSON payload (very useful for re-engagement campaigns):
+```
+public void onAppOpenAttribution(string validateResult) {
+	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
+	System.Collections.Generic.Dictionary<string, string> values =
+		new System.Collections.Generic.Dictionary<string, string>();
+	values.Add("link", deeplink);
+	AppsFlyer.trackRichEvent("deeplink", values);
+	AppsFlyer.trackEvent("deeplink", validateResult);
+}
+```
