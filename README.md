@@ -127,7 +127,7 @@ UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityD
 # Special Cases
 
 ## AppsFlyer
-AppsFlyer already provides some implementation for iOS and Android to handle deeplinks. However, it does not behave consistently for iOS and Android:
+AppsFlyer already provides some implementation for iOS and Android to handle deeplinks. However, it does not behave consistently for iOS and Android when a deeplink is activated:
 * For iOS, it triggers the *onAppOpenAttribution* method in the *AppsFlyerTrackerCallbacks* script
 * For Android, it does not trigger any Unity script method
 
@@ -149,7 +149,7 @@ if (deeplink != null) {
 // finish()
 ```
 * Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
-* Ensure, like with UnityDeeplink's *build_jar.sh* that all paths are set correctly
+* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
 * Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
 `./build_plugin_jar.sh`
 
