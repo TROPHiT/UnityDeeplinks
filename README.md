@@ -68,7 +68,7 @@ Only perform this step if you made changes to *Assets/UnityDeeplinks/Android/MyU
 * Go to your Unity => Preferences => External tools menu and find your Android SDK and JDK home folders
 * Edit *UnityDeeplinks/Android/bulid_jar.sh*
 * Ensure ANDROID_SDK_ROOT points to your Android SDK root folder
-* Ensure the BOOTCLASSPATH points to your JDK/jre/lib folder
+* Ensure JDK_HOME points to your JDK root folder
 * Ensure UNITY_LIBS points to the Unity classes.jar file in your development environment
 
 #### Build instructions
