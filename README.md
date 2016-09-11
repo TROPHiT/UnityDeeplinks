@@ -2,7 +2,7 @@
 A set of tools for Unity to allow handling deeplink activation from within Unity scripts
 
 # Usage
-From within your Unity script, whenever the app gets activated by a deeplink, the following method will be called:
+Implement `onDeeplink` in your *Assets/UnityDeeplinks/UnityDeeplinks.cs* script as you see fit. It gets called whenever the app gets activated by a deeplink:
 
 ```
 public void onDeeplink(string deeplink) {
@@ -10,7 +10,7 @@ public void onDeeplink(string deeplink) {
 }
 ```
 
-# Integration Instructions
+# Integration
 1. Clone/download the repository
 2. Copy the entire UnityDeeplinks folder into your Unity project Assets folder
 
@@ -89,10 +89,26 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
+* Attached the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to some main object in your scene
+* Ensure your XCode project Info.plist file contains a custom URL scheme definiton or Universal Links setup. Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
+```
+<key>CFBundleURLTypes</key>
+<array>
+    <dict>
+        <key>CFBundleURLName</key>
+        <string>com.mycompany.myapp</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>myapp</string>
+        </array>
+    </dict>
+</array>
+```
+*Note:* The custom URL scheme settings may be removed at build-time by Unity, ensure they are recreated if needed, by a post-build script, for example.
 
 ## Testing
 
-* Prepare a dummy html page that is accessible by your mobile device:
+* Prepare a dummy web page that is accessible by your mobile device:
 ```
 <body>
 <a href="myapp://?a=b">deeplink test</a>
