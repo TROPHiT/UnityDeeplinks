@@ -92,8 +92,8 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
-* Attached the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to some main object in your scene
-* Ensure your XCode project Info.plist file contains a custom URL scheme definiton or Universal Links setup. Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
+* Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to some main object in your scene
+* Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or Universal Links setup. Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
 <key>CFBundleURLTypes</key>
 <array>
