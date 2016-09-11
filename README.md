@@ -85,6 +85,7 @@ Compiling ...
 Creating jar file...
 adding: com/(in = 0) (out= 0)(stored 0%)
 adding: com/trophit/(in = 0) (out= 0)(stored 0%)
+adding: com/trophit/DeeplinkActivity.class(in = 2368) (out= 1237)(deflated 47%)
 adding: com/trophit/MyUnityPlayerActivity.class(in = 1504) (out= 789)(deflated 47%)
 ```
 This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Assets/UnityDeeplinks folder
