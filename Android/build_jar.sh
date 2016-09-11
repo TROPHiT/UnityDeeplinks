@@ -8,7 +8,7 @@ export ANDROID_SDK_ROOT
 
 BOOTCLASSPATH=/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/jre/lib
 export BOOTCLASSPATH
-CLASSPATH=../AF-Android-SDK.jar:$UNITY_LIBS:$ANDROID_SDK_ROOT/platforms/android-23/android.jar
+CLASSPATH=$UNITY_LIBS:$ANDROID_SDK_ROOT/platforms/android-23/android.jar
 export CLASSPATH
 
 echo "Compiling ..."
