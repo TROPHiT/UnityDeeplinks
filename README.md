@@ -63,7 +63,7 @@ In this approach, a second activity with deeplink-handling code is added to the 
 * Optional: by default, *DeeplinkActivity* calls a Unity script method `onDeeplink` on a game object called *UnityDeeplinks*. If you wish to change the name of the object or method, you should edit *Assets/UnityDeeplinks/Android/DeeplinkActivity.java*, change the values of the `gameObject` and/or `deeplinkMethod` static properties and rebuild the *UnityDeeplinks.jar* file as instructed below
 
 ### Building the UnityDeeplinks.jar file
-Only perform this step if you made changes to *Assets/UnityDeeplinks/Android/MyUnityPlayerActivity.java* or would like to rebuild it using an updated version of Unity classes, Android SDK, JDK and so on.
+Only perform this step if you made changes to any .java file under *Assets/UnityDeeplinks/Android/* or would like to rebuild it using an updated version of Unity classes, Android SDK, JDK and so on.
 
 #### Prerequisites
 * Go to your Unity => Preferences => External tools menu and find your Android SDK and JDK home folders
