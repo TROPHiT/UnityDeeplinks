@@ -5,7 +5,8 @@ A set of tools for Unity to allow handling deeplink activation from within Unity
 This is NOT a TROPHiT SDK - this repo is merely an open-source contribution to developers on how to handle deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose.
 
 # Usage
-Implement `onDeeplink` in your *Assets/UnityDeeplinks/UnityDeeplinks.cs* script as you see fit. It gets called whenever the app gets activated by a deeplink:
+* Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to some main object in your scene
+* Implement `onDeeplink` in that script as you see fit. It gets called whenever the app gets activated by a deeplink:
 
 ```
 public void onDeeplink(string deeplink) {
@@ -93,7 +94,6 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
-* Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to some main object in your scene
 * Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or Universal Links setup. Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
 <key>CFBundleURLTypes</key>
