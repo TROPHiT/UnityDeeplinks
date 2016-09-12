@@ -2,7 +2,7 @@
 A set of tools for Unity to allow handling deeplink activation from within Unity scripts.
 
 ### Disclaimer
-This is NOT a TROPHiT SDK - this repo is merely an open-source contribution to developers on how to handle deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose.
+This is NOT a TROPHiT SDK - this repo is an open-source contribution to developers on how to handle deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose.
 
 # Usage
 * Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty object in your scene, called *UnityDeeplinks*
