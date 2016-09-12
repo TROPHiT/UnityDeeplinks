@@ -131,7 +131,7 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 * For iOS, it triggers the *onAppOpenAttribution* method in the *AppsFlyerTrackerCallbacks* script
 * For Android, it does not trigger any Unity script method
 
-Fortunately, AppsFlyer provides an implementation similar to Alternative #2 above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
+Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
 * Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
 * Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
 ```
