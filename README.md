@@ -162,8 +162,7 @@ public void onAppOpenAttribution(string validateResult) {
 	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
 	System.Collections.Generic.Dictionary<string, string> values =
 		new System.Collections.Generic.Dictionary<string, string>();
-	values.Add("link", deeplink);
+	values.Add("data", validateResult);
 	AppsFlyer.trackRichEvent("deeplink", values);
-	AppsFlyer.trackEvent("deeplink", validateResult);
 }
 ```
