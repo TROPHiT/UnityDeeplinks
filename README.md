@@ -132,6 +132,7 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 * For Android, it does not trigger any Unity script method
 
 Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
+* First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
 * Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
 * Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
 ```
