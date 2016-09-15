@@ -43,6 +43,9 @@ public void onDeeplink(string deeplink) {
 }
 ```
 
+### Track Deeplinks with AppsFlyer
+See [this section](#appsflyer) for details, as there are some extra steps
+
 # Integration
 1. Clone/download the repository
 2. Copy the entire UnityDeeplinks folder into your Unity project Assets folder
