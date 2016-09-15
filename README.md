@@ -11,6 +11,7 @@ This is NOT a TROPHiT SDK - this repo is an open-source contribution to develope
 ```
 public void onDeeplink(string deeplink) {
     Debug.Log("onDeeplink " + deeplink);
+    // Do something with the deeplink
 }
 ```
 ## Examples
@@ -21,6 +22,24 @@ public void onDeeplink(string deeplink) {
     AdjustEvent adjustEvent = new AdjustEvent("abc123");
     adjustEvent.addCallbackParameter("deeplink", deeplink);
     Adjust.trackEvent(adjustEvent);
+}
+```
+
+### Track Deeplinks with Tune
+Assuming you already integrated the [Tune Unity SDK](https://developers.tune.com/sdk/unity-quick-start/), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+   TuneEvent event = new TuneEvent("deeplink");
+   event.attribute1 = "extra life";
+   Tune.MeasureEvent(event);
+}
+```
+
+### Track Deeplinks with Kochava
+Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+   Kochava.DeeplinkEvent(deeplink, null);
 }
 ```
 
