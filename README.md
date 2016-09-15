@@ -110,7 +110,7 @@ UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityD
     </dict>
 </array>
 ```
-*Note:* The above settings may be removed at build-time by Unity, ensure they are recreated if needed, by a post-build script, for example.
+*Note:* Custom URL scheme settings may be removed during Unity rebuilds. Ensure they are recreated if needed, by a post-build script, for example. Universal Link settings are not removed during Unity rebuilds.
 
 ## Testing
 
