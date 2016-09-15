@@ -96,7 +96,7 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 ## iOS
 UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications and relayes them to the Unity script for processing.
 
-* Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or (Universal Links setup)[https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html]. Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
+* Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or [Universal Links setup](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html). Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
 <key>CFBundleURLTypes</key>
 <array>
