@@ -159,11 +159,16 @@ if (deeplink != null) {
 
 @implementation UnityAppController (UnityDeeplinks)
 
-- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
+- (BOOL)application:(UIApplication *)application
+   continueUserActivity:(nonnull NSUserActivity *)userActivity
+     restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
     
     // App was opened from a Universal Link
     if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self application:application openURL:userActivity.webpageURL sourceApplication:nil annotation:[NSDictionary dictionary]];
+        [self application:application
+                  openURL:userActivity.webpageURL
+            sourceApplication:nil
+               annotation:[NSDictionary dictionary]];
     }
     return YES;
 }
