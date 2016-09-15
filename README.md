@@ -168,7 +168,7 @@ Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#a
 * Next, ensure you call `AppsFlyer.getConversionData();` in your AppsFlyer iOS startup script, right after `setAppId`:
 ```
 #if UNITY_IOS
-AppsFlyer.setAppID ("974019778");
+AppsFlyer.setAppID ("123456789");
 AppsFlyer.getConversionData();
 // ...
 ```
