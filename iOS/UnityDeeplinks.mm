@@ -10,6 +10,7 @@
 
 // Include Unity types from the Unity app itself:
 #import "AppDelegateListener.h"
+#import "UnityAppController.h"
 
 
 
@@ -60,6 +61,20 @@ extern "C" {
 
 @end
 
+
+
+@implementation UnityAppController (UnityDeeplinks)
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
+    
+    // App was opened from a Universal Link
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self application:application openURL:userActivity.webpageURL sourceApplication:nil annotation:[NSDictionary dictionary]];
+    }
+    return YES;
+}
+
+@end
 
 
 
