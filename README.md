@@ -30,7 +30,7 @@ Assuming you already integrated the [Tune Unity SDK](https://developers.tune.com
 ```
 public void onDeeplink(string deeplink) {
    TuneEvent event = new TuneEvent("deeplink");
-   event.attribute1 = "extra life";
+   event.attribute1 = deeplink;
    Tune.MeasureEvent(event);
 }
 ```
