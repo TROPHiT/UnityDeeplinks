@@ -1,8 +1,8 @@
 # UnityDeeplinks
-A set of tools for Unity to allow handling deeplink activation from within Unity scripts.
+A set of tools for Unity to allow handling deeplink activation from within Unity scripts, for Android and iOS
 
 ### Disclaimer
-This is NOT a TROPHiT SDK - this repo is an open-source contribution to developers on how to handle deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose.
+This is NOT a TROPHiT SDK - this repo is an open-source contribution to developers for handling deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose. If you are looking for info about TROPHiT integration modules, visit the [TROPHiT Help Center](https://trophit.zendesk.com/hc/en-us/articles/200865062-How-do-I-integrate-TROPHiT-)
 
 # Usage
 * Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty object in your scene, called *UnityDeeplinks*
@@ -11,8 +11,39 @@ This is NOT a TROPHiT SDK - this repo is an open-source contribution to develope
 ```
 public void onDeeplink(string deeplink) {
     Debug.Log("onDeeplink " + deeplink);
+    // Do something with the deeplink
 }
 ```
+#### Example: Track Deeplinks with Adjust
+Assuming you already integrated the [Adjust Unity SDK](https://github.com/adjust/unity_sdk), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+    AdjustEvent adjustEvent = new AdjustEvent("abc123");
+    adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
+    Adjust.trackEvent(adjustEvent);
+}
+```
+
+#### Example: Track Deeplinks with Tune
+Assuming you already integrated the [Tune Unity SDK](https://developers.tune.com/sdk/unity-quick-start/), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+   TuneEvent event = new TuneEvent("deeplink");
+   event.attribute1 = deeplink;
+   Tune.MeasureEvent(event);
+}
+```
+
+#### Example: Track Deeplinks with Kochava
+Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+   Kochava.DeeplinkEvent(deeplink, null);
+}
+```
+
+#### Example: Track Deeplinks with AppsFlyer
+See [this section](#appsflyer) for details, as there are some extra steps
 
 # Integration
 1. Clone/download the repository
@@ -94,7 +125,7 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
-UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications and relayes them to the Unity script for processing.
+UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications as well as to the app's Univeral Link activations and relayes them to the Unity script for processing.
 
 * Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or [Universal Links setup](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html). Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
@@ -133,27 +164,14 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 
 Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
 * First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
-* Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
-* Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
+* Next, ensure you call `AppsFlyer.getConversionData();` in your AppsFlyer iOS startup script, right after `setAppId`:
 ```
-// this.startActivity(newIntent);
-String deeplink = getIntent().getDataString();
-if (deeplink != null) {
-    try {
-        org.json.JSONObject jo = new org.json.JSONObject();
-        jo.put("link", getIntent().getDataString());
-        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
-    } catch (org.json.JSONException ex) {
-        Log.e(TAG, "Unable to send deeplink to Unity", ex);
-    }
-}
-// finish()
+#if UNITY_IOS
+AppsFlyer.setAppID ("123456789");
+AppsFlyer.getConversionData();
+// ...
 ```
-* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
-* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
-* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
-`./build_plugin_jar.sh`
-* Add the following code at the end of the AppsFlyerDelegate.mm file (after the `@end` statement) to also handle Universal Links:
+* Add the following code at the end of the *Assets/Plugins/iOS/AppsFlyerDelegate.mm* file (after the `@end` statement) to also handle Universal Links:
 ```
 // @end /* AppsFlyerDelegate */
 
@@ -175,6 +193,25 @@ if (deeplink != null) {
 
 @end
 ```
+* Add the following to *Assets/Plugins/Android/src/GetDeepLinkingActivity.java* inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
+```
+// this.startActivity(newIntent);
+String deeplink = getIntent().getDataString();
+if (deeplink != null) {
+    try {
+        org.json.JSONObject jo = new org.json.JSONObject();
+        jo.put("link", getIntent().getDataString());
+        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
+    } catch (org.json.JSONException ex) {
+        Log.e(TAG, "Unable to send deeplink to Unity", ex);
+    }
+}
+// finish()
+```
+* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
+* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
+* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
+`./build_plugin_jar.sh`
 
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
