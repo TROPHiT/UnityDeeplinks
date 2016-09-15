@@ -13,6 +13,16 @@ public void onDeeplink(string deeplink) {
     Debug.Log("onDeeplink " + deeplink);
 }
 ```
+## Examples
+### Track Deeplinks with Adjust
+Assuming you already integrated the [Adjust Unity SDK](https://github.com/adjust/unity_sdk), just implement `onDeeplink` as follows:
+```
+public void onDeeplink(string deeplink) {
+    AdjustEvent adjustEvent = new AdjustEvent("abc123");
+    adjustEvent.addCallbackParameter("deeplink", deeplink);
+    Adjust.trackEvent(adjustEvent);
+}
+```
 
 # Integration
 1. Clone/download the repository
