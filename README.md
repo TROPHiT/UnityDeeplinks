@@ -171,7 +171,6 @@ if (deeplink != null) {
 @end
 ```
 
-### Final Step
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
 
