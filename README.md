@@ -14,8 +14,7 @@ public void onDeeplink(string deeplink) {
     // Do something with the deeplink
 }
 ```
-## Examples
-### Track Deeplinks with Adjust
+#### Example: Track Deeplinks with Adjust
 Assuming you already integrated the [Adjust Unity SDK](https://github.com/adjust/unity_sdk), just implement `onDeeplink` as follows:
 ```
 public void onDeeplink(string deeplink) {
@@ -25,7 +24,7 @@ public void onDeeplink(string deeplink) {
 }
 ```
 
-### Track Deeplinks with Tune
+#### Example: Track Deeplinks with Tune
 Assuming you already integrated the [Tune Unity SDK](https://developers.tune.com/sdk/unity-quick-start/), just implement `onDeeplink` as follows:
 ```
 public void onDeeplink(string deeplink) {
@@ -35,7 +34,7 @@ public void onDeeplink(string deeplink) {
 }
 ```
 
-### Track Deeplinks with Kochava
+#### Example: Track Deeplinks with Kochava
 Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` as follows:
 ```
 public void onDeeplink(string deeplink) {
@@ -43,7 +42,7 @@ public void onDeeplink(string deeplink) {
 }
 ```
 
-### Track Deeplinks with AppsFlyer
+#### Example: Track Deeplinks with AppsFlyer
 See [this section](#appsflyer) for details, as there are some extra steps
 
 # Integration
@@ -126,7 +125,7 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
-UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications and relayes them to the Unity script for processing.
+UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications as well as to the app's Univeral Link activations and relayes them to the Unity script for processing.
 
 * Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or [Universal Links setup](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html). Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
