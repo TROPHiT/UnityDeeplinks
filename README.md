@@ -171,27 +171,7 @@ AppsFlyer.setAppID ("123456789");
 AppsFlyer.getConversionData();
 // ...
 ```
-* Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
-* Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
-```
-// this.startActivity(newIntent);
-String deeplink = getIntent().getDataString();
-if (deeplink != null) {
-    try {
-        org.json.JSONObject jo = new org.json.JSONObject();
-        jo.put("link", getIntent().getDataString());
-        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
-    } catch (org.json.JSONException ex) {
-        Log.e(TAG, "Unable to send deeplink to Unity", ex);
-    }
-}
-// finish()
-```
-* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
-* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
-* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
-`./build_plugin_jar.sh`
-* Add the following code at the end of the AppsFlyerDelegate.mm file (after the `@end` statement) to also handle Universal Links:
+* Add the following code at the end of the *Assets/Plugins/iOS/AppsFlyerDelegate.mm* file (after the `@end` statement) to also handle Universal Links:
 ```
 // @end /* AppsFlyerDelegate */
 
@@ -213,6 +193,25 @@ if (deeplink != null) {
 
 @end
 ```
+* Add the following to *Assets/Plugins/Android/src/GetDeepLinkingActivity.java* inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
+```
+// this.startActivity(newIntent);
+String deeplink = getIntent().getDataString();
+if (deeplink != null) {
+    try {
+        org.json.JSONObject jo = new org.json.JSONObject();
+        jo.put("link", getIntent().getDataString());
+        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
+    } catch (org.json.JSONException ex) {
+        Log.e(TAG, "Unable to send deeplink to Unity", ex);
+    }
+}
+// finish()
+```
+* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
+* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
+* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
+`./build_plugin_jar.sh`
 
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
