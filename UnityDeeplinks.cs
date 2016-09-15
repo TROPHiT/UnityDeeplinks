@@ -24,11 +24,8 @@ public class UnityDeeplinks : MonoBehaviour {
 	
 	}
 
-	public void onDeeplink2(string deeplink) {
+	public void onDeeplink(string deeplink) {
 		Debug.Log("onDeeplink " + deeplink);
-//		Dictionary<string, string> values = new Dictionary<string, string>();
-//		values.Add("link", deeplink);
-//		AppsFlyer.trackRichEvent("deeplink", values);
 	}
 
 
