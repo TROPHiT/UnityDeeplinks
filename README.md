@@ -20,7 +20,7 @@ Assuming you already integrated the [Adjust Unity SDK](https://github.com/adjust
 ```
 public void onDeeplink(string deeplink) {
     AdjustEvent adjustEvent = new AdjustEvent("abc123");
-    adjustEvent.addCallbackParameter("deeplink", deeplink);
+    adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
     Adjust.trackEvent(adjustEvent);
 }
 ```
