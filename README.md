@@ -133,6 +133,8 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 
 Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
 * First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
+
+### Android
 * Edit *Assets/Plugins/Android/src/GetDeepLinkingActivity.java*
 * Add the following inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
 ```
@@ -154,6 +156,24 @@ if (deeplink != null) {
 * Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
 `./build_plugin_jar.sh`
 
+### iOS
+* Add the following code at the end of the AppsFlyerDelegate.mm file (after the `@end` statement) to also handle Universal Links:
+```
+@implementation UnityAppController (UnityDeeplinks)
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
+    
+    // App was opened from a Universal Link
+    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
+        [self application:application openURL:userActivity.webpageURL sourceApplication:nil annotation:[NSDictionary dictionary]];
+    }
+    return YES;
+}
+
+@end
+```
+
+### Final Step
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
 
