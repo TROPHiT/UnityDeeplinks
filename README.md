@@ -1,5 +1,5 @@
 # UnityDeeplinks
-A set of tools for Unity to allow handling deeplink activation from within Unity scripts, for Android and iOS
+A set of tools for Unity to allow handling deeplink activation from within Unity scripts, for Android and iOS, including iOS Universal Links.
 
 ### Disclaimer
 This is NOT a TROPHiT SDK - this repo is an open-source contribution to developers for handling deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose. If you are looking for info about TROPHiT integration modules, visit the [TROPHiT Help Center](https://trophit.zendesk.com/hc/en-us/articles/200865062-How-do-I-integrate-TROPHiT-)
@@ -23,6 +23,19 @@ public void onDeeplink(string deeplink) {
     adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
     Adjust.trackEvent(adjustEvent);
 }
+```
+* Add the following code marked `add this` to *Assets/UnitDeeplinks/iOS/UnityDeeplinks.mm*:
+```
+#import "Adjust.h"  // <==== add this
+...
+
+- (void)onNotification:(NSNotification*)notification {
+    if (![kUnityOnOpenURL isEqualToString:notification.name]) return;
+    ...
+    [Adjust appWillOpenUrl:url]; // <==== add this right before UnityDeeplinks_dispatch
+    UnityDeeplinks_dispatch([url absoluteString]);
+}
+
 ```
 
 #### Example: Track Deeplinks with Tune
