@@ -51,7 +51,7 @@ public void onDeeplink(string deeplink) {
 
 #### Example: Track Deeplinks with AppsFlyer
 * Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1
-* Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `.onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
+* Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
 ```
 public void onAppOpenAttribution(string validateResult) {
 	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
