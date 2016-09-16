@@ -7,6 +7,7 @@ This is NOT a TROPHiT SDK - this repo is an open-source contribution to develope
 # Usage
 #### Example: Track Deeplinks with Adjust
 * Tested with [Adjust Unity SDK](https://github.com/adjust/unity_sdk) v4.10.0
+* Also enables Adjust's SDK to handle iOS Universal Links
 * Assuming you already integrated the Adjust SDK, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
 ```
 public void onDeeplink(string deeplink) {
@@ -42,7 +43,8 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with Kochava
-Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
+* Also enables Kochava's SDK to handle iOS Universal Links
+* Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
 ```
 public void onDeeplink(string deeplink) {
    Kochava.DeeplinkEvent(deeplink, null);
@@ -51,6 +53,7 @@ public void onDeeplink(string deeplink) {
 
 #### Example: Track Deeplinks with AppsFlyer
 * Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1
+* Also enables AppsFlyer's SDK to handle iOS Universal Links
 * Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
 ```
 public void onAppOpenAttribution(string validateResult) {
