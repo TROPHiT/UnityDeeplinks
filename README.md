@@ -26,7 +26,7 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with Tune
-* Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/ v4.3.1
+* Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/) v4.3.1
 * Also enables Tune's Plugin to handle iOS Universal Links
 * Assuming you already integrated the Tune Plugin, just implement `onDeeplink` as follows:
 ```
