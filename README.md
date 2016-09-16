@@ -5,19 +5,9 @@ A set of tools for Unity to allow handling deeplink activation from within Unity
 This is NOT a TROPHiT SDK - this repo is an open-source contribution to developers for handling deeplink activations in a unified way for both iOS and Android. It can be used independently and regardless of TROPHiT services in order to intercept deeplinks for whatever purpose. If you are looking for info about TROPHiT integration modules, visit the [TROPHiT Help Center](https://trophit.zendesk.com/hc/en-us/articles/200865062-How-do-I-integrate-TROPHiT-)
 
 # Usage
-* **Note**: if you wish to handle deeplinks by AppsFlyer, skip to [this section](#appsflyer)
-* Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty object in your scene, called *UnityDeeplinks*
-* Implement `onDeeplink` in that script as you see fit. It gets called whenever the app gets activated by a deeplink:
-
-```
-public void onDeeplink(string deeplink) {
-    Debug.Log("onDeeplink " + deeplink);
-    // Do something with the deeplink
-}
-```
 #### Example: Track Deeplinks with Adjust
 * Tested with [Adjust Unity SDK](https://github.com/adjust/unity_sdk) v4.10.0
-* Assuming you already integrated the Adjust SDK, just implement `onDeeplink` as follows:
+* Assuming you already integrated the Adjust SDK, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
 ```
 public void onDeeplink(string deeplink) {
     AdjustEvent adjustEvent = new AdjustEvent("abc123");
@@ -42,7 +32,7 @@ public void onDeeplink(string deeplink) {
 #### Example: Track Deeplinks with Tune
 * Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/) v4.3.1
 * Also enables Tune's Plugin to handle iOS Universal Links
-* Assuming you already integrated the Tune Plugin, just implement `onDeeplink` as follows:
+* Assuming you already integrated the Tune Plugin, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
 ```
 public void onDeeplink(string deeplink) {
    TuneEvent event = new TuneEvent("deeplink");
@@ -52,7 +42,7 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with Kochava
-Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` as follows:
+Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
 ```
 public void onDeeplink(string deeplink) {
    Kochava.DeeplinkEvent(deeplink, null);
@@ -60,11 +50,23 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with AppsFlyer
-See [this section](#appsflyer) for details, as there are some extra steps
+* Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1
+* Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `.onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
+```
+public void onAppOpenAttribution(string validateResult) {
+	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
+	System.Collections.Generic.Dictionary<string, string> values =
+		new System.Collections.Generic.Dictionary<string, string>();
+	values.Add("data", validateResult);
+	AppsFlyer.trackRichEvent("deeplink", values);
+}
+```
 
 # Integration
-1. Clone/download the repository
-2. Copy the entire UnityDeeplinks folder into your Unity project Assets folder
+* Clone/download the repository
+* Copy the entire UnityDeeplinks folder into your Unity project Assets folder
+* If you are using **AppsFlyer**, , skip the next steps to this [section](#appsflyer). Otherwise, continue
+* Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty *UnityDeeplinks* game object
 
 ## Android
 There are two alternatives to handle a deeplink by a Unity app, depending on how your Unity project is currently built. It's up to you to decide which way to go.
@@ -83,12 +85,12 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
 
 * Add the following inside the <activity> tag, assuming your deeplink URL scheme is myapp://
 ```
-  	<intent-filter>
-   		<action android:name="android.intent.action.VIEW" />
-   		<category android:name="android.intent.category.DEFAULT" />
-   		<category android:name="android.intent.category.BROWSABLE" />
-   		<data android:scheme="myapp" />
- 	</intent-filter>
+    <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="myapp" />
+    </intent-filter>
 ```
 
 * Optional: by default, *MyUnityPlayerActivity* calls a Unity script method `onDeeplink` on a game object called *UnityDeeplinks*. If you wish to change the name of the object or method, you should edit *Assets/UnityDeeplinks/Android/MyUnityPlayerActivity.java*, change the values of the `gameObject` and/or `deeplinkMethod` static properties and rebuild the *UnityDeeplinks.jar* file as instructed below
@@ -142,7 +144,7 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 * Continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
-UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for Unity's open-URL notifications as well as to the app's Univeral Link activations and relayes them to the Unity script for processing.
+UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for URL/Univeral Link activations and relayes them to the Unity script for processing.
 
 * Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or [Universal Links setup](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html). Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
 ```
@@ -188,28 +190,6 @@ AppsFlyer.setAppID ("123456789");
 AppsFlyer.getConversionData();
 // ...
 ```
-* Add the following code at the end of the *Assets/Plugins/iOS/AppsFlyerDelegate.mm* file (after the `@end` statement) to also handle Universal Links:
-```
-// @end /* AppsFlyerDelegate */
-
-@implementation UnityAppController (UnityDeeplinks)
-
-- (BOOL)application:(UIApplication *)application
-   continueUserActivity:(nonnull NSUserActivity *)userActivity
-     restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
-    
-    // App was opened from a Universal Link
-    if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
-        [self application:application
-                  openURL:userActivity.webpageURL
-            sourceApplication:nil
-               annotation:[NSDictionary dictionary]];
-    }
-    return YES;
-}
-
-@end
-```
 * Add the following to *Assets/Plugins/Android/src/GetDeepLinkingActivity.java* inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
 ```
 // this.startActivity(newIntent);
@@ -232,15 +212,3 @@ if (deeplink != null) {
 
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
-
-
-Here's an example of an implementation which simply lets AppsFlyer track the deeplink activation along with its JSON payload (very useful for re-engagement campaigns):
-```
-public void onAppOpenAttribution(string validateResult) {
-	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
-	System.Collections.Generic.Dictionary<string, string> values =
-		new System.Collections.Generic.Dictionary<string, string>();
-	values.Add("data", validateResult);
-	AppsFlyer.trackRichEvent("deeplink", values);
-}
-```
