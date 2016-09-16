@@ -9,7 +9,7 @@ This is NOT a TROPHiT SDK - this repo is an open-source contribution to develope
 * Tested with [Adjust Unity SDK](https://github.com/adjust/unity_sdk) v4.10.0
 * Also enables Adjust's SDK to handle iOS Universal Links
 * Assuming you already integrated the Adjust SDK, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```
+```cs
 public void onDeeplink(string deeplink) {
     AdjustEvent adjustEvent = new AdjustEvent("abc123");
     adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
@@ -17,7 +17,7 @@ public void onDeeplink(string deeplink) {
 }
 ```
 * Add the following code marked `add this` to *Assets/UnitDeeplinks/iOS/UnityDeeplinks.mm*:
-```
+```objc
 #import "Adjust.h"  // <==== add this
 ...
 
@@ -34,7 +34,7 @@ public void onDeeplink(string deeplink) {
 * Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/) v4.3.1
 * Also enables Tune's Plugin to handle iOS Universal Links
 * Assuming you already integrated the Tune Plugin, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```
+```cs
 public void onDeeplink(string deeplink) {
    TuneEvent event = new TuneEvent("deeplink");
    event.attribute1 = deeplink;
@@ -45,7 +45,7 @@ public void onDeeplink(string deeplink) {
 #### Example: Track Deeplinks with Kochava
 * Also enables Kochava's SDK to handle iOS Universal Links
 * Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```
+```cs
 public void onDeeplink(string deeplink) {
    Kochava.DeeplinkEvent(deeplink, null);
 }
@@ -55,7 +55,7 @@ public void onDeeplink(string deeplink) {
 * Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1
 * Also enables AppsFlyer's SDK to handle iOS Universal Links
 * Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
-```
+```cs
 public void onAppOpenAttribution(string validateResult) {
 	print("AppsFlyerTrackerCallbacks:: got onAppOpenAttribution  = " + validateResult);
 	System.Collections.Generic.Dictionary<string, string> values =
@@ -79,7 +79,7 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
 
 * Replace the default UnityPlayerActivity in your Assets/Plugins/Android/AndroidManifest.xml with com.trophit.MyUnityPlayerActivity:
 
-```
+```xml
 <!--
 <activity android:name="com.unity3d.player.UnityPlayerActivity" ...
 -->
@@ -87,7 +87,7 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
 ```
 
 * Add the following inside the <activity> tag, assuming your deeplink URL scheme is myapp://
-```
+```xml
     <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
@@ -102,7 +102,7 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
 In this approach, a second activity with deeplink-handling code is added to the Unity project, without subclassing the default activity. Use this is case where option #1 is not acceptable (code is too complex, not under your control, cannot be subclassed, etc)
 
 * Add the following activity to your Assets/Plugins/Android/AndroidManifest.xml, assuming your deeplink URL scheme is myapp://
-```
+```xml
 <activity android:name="com.trophit.DeeplinkActivity" android:exported="true">
 	<intent-filter>
 		<action android:name="android.intent.action.VIEW" />
@@ -150,7 +150,7 @@ This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Asse
 UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. the plugin listens for URL/Univeral Link activations and relayes them to the Unity script for processing.
 
 * Ensure your XCode project's Info.plist file contains a custom URL scheme definiton or [Universal Links setup](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html). Here is an example of a custom URL scheme *myapp://* for the bundle ID *com.mycompany.myapp*:
-```
+```xml
 <key>CFBundleURLTypes</key>
 <array>
     <dict>
@@ -168,7 +168,7 @@ UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityD
 ## Testing
 
 * Prepare a dummy web page that is accessible by your mobile device:
-```
+```xml
 <body>
 <a href="myapp://?a=b">deeplink test</a>
 </body>
@@ -188,14 +188,14 @@ Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#a
 * First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
 * Ensure you have your URL schemes or Universal Links set up
 * Next, ensure you call `AppsFlyer.getConversionData();` in your AppsFlyer iOS startup script, right after `setAppId`:
-```
+```cs
 #if UNITY_IOS
 AppsFlyer.setAppID ("123456789");
 AppsFlyer.getConversionData();
 // ...
 ```
 * Add the following to *Assets/Plugins/Android/src/GetDeepLinkingActivity.java* inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
-```
+```java
 // this.startActivity(newIntent);
 String deeplink = getIntent().getDataString();
 if (deeplink != null) {
