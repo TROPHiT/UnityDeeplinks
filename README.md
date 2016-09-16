@@ -65,7 +65,7 @@ public void onAppOpenAttribution(string validateResult) {
 # Integration
 * Clone/download the repository
 * Copy the entire UnityDeeplinks folder into your Unity project Assets folder
-* If you are using **AppsFlyer**, , skip the next steps to this [section](#appsflyer). Otherwise, continue
+* <span color="red">**If you are using AppsFlyer, skip the next steps to this [section](#appsflyer). Otherwise, continue**</span>
 * Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty *UnityDeeplinks* game object
 
 ## Android
