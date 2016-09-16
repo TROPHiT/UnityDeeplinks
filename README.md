@@ -15,7 +15,8 @@ public void onDeeplink(string deeplink) {
 }
 ```
 #### Example: Track Deeplinks with Adjust
-Assuming you already integrated the [Adjust Unity SDK](https://github.com/adjust/unity_sdk), just implement `onDeeplink` as follows:
+* Tested with [Adjust Unity SDK](https://github.com/adjust/unity_sdk) v4.10.0
+* Assuming you already integrated the Adjust SDK, just implement `onDeeplink` as follows:
 ```
 public void onDeeplink(string deeplink) {
     AdjustEvent adjustEvent = new AdjustEvent("abc123");
@@ -25,7 +26,9 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with Tune
-Assuming you already integrated the [Tune Unity SDK](https://developers.tune.com/sdk/unity-quick-start/), just implement `onDeeplink` as follows:
+* Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/ v4.3.1
+* Also enables Tune's Plugin to handle iOS Universal Links
+* Assuming you already integrated the Tune Plugin, just implement `onDeeplink` as follows:
 ```
 public void onDeeplink(string deeplink) {
    TuneEvent event = new TuneEvent("deeplink");
