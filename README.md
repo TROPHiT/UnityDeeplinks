@@ -65,7 +65,7 @@ public void onAppOpenAttribution(string validateResult) {
 # Integration
 * Clone/download the repository
 * Copy the entire UnityDeeplinks folder into your Unity project Assets folder
-* <dl color="red">**If you are using AppsFlyer, skip the next steps to this [section](#appsflyer). Otherwise, continue**</dl>
+* **If you are using AppsFlyer, skip the next steps to this [section](#appsflyer). Otherwise, continue**
 * Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty *UnityDeeplinks* game object
 
 ## Android
@@ -183,6 +183,7 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 
 Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
 * First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
+* Ensure you have your URL schemes or Universal Links set up
 * Next, ensure you call `AppsFlyer.getConversionData();` in your AppsFlyer iOS startup script, right after `setAppId`:
 ```
 #if UNITY_IOS
@@ -212,3 +213,4 @@ if (deeplink != null) {
 
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
+* Proceed to [testing](#testing) as usual
