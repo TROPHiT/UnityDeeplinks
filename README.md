@@ -173,7 +173,7 @@ AppsFlyer already provides some implementation for iOS and Android to handle dee
 
 We can complement AppsFlyer's plugin and ensure the same trigger is added for Android:
 
-* Do NOT implement the AppsFlyer deeplinking configuration as the guide suggests (it uses the concept of a second activity to trigger deeplinks, which we've [discussed earlier](#asdf)
+* Do NOT implement the AppsFlyer deeplinking configuration as the guide suggests (it uses the concept of a second activity to trigger deeplinks, which we've [discussed earlier](#why-not-handle-deeplinks-in-a-second-activity)
 * For iOS, call `AppsFlyer.getConversionData();` in your AppsFlyer startup script, right after `setAppId`:
 ```cs
 #if UNITY_IOS
