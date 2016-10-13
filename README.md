@@ -52,7 +52,8 @@ public void onDeeplink(string deeplink) {
 ```
 
 #### Example: Track Deeplinks with AppsFlyer
-* Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1
+* Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1, v4.11
+* Requires some [customizations](#appsflyer)
 * Also enables AppsFlyer's SDK to handle iOS Universal Links (for AppsFlyer Unity SDK 4.10 or earlier)
 * Assuming you already integrated the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity), just implement `onAppOpenAttribution` in *AppsFlyerTrackerCallbacks.cs* as follows:
 ```cs
@@ -72,10 +73,7 @@ public void onAppOpenAttribution(string validateResult) {
 * Attach the *Assets/UnityDeeplinks/UnityDeeplinks.cs* script to an empty *UnityDeeplinks* game object
 
 ## Android
-There are two alternatives to handle a deeplink by a Unity app, depending on how your Unity project is currently built. It's up to you to decide which way to go.
-
-### Alternative 1: Subclassing UnityPlayerActivity
-In this approach, you use a subclass of the default *UnityPlayerActivity*, which contains deeplink-handling code that marshals deeplinks into your Unity script. This is the recommended approach, as it is the least complex. If you have no previous plans to subsclass UnityPlayerActivity, it's a good approach because then the subclassed code would not conflict with anything. If you do have plans to subclass UnityPlayerActivity, however, it would usually also be a good approach as the code changes you need to make are minimal. You will have to use the provided *MyUnityPlayerActivity* subclass as follows:
+Subclass the default *UnityPlayerActivity* in order to add deeplink-handling code that marshals deeplinks into your Unity script:
 
 * Replace the default UnityPlayerActivity in your Assets/Plugins/Android/AndroidManifest.xml with com.trophit.MyUnityPlayerActivity:
 
@@ -86,7 +84,7 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
 <activity android:name="com.trophit.MyUnityPlayerActivity" ...
 ```
 
-* Add the following inside the <activity> tag, assuming your deeplink URL scheme is myapp://
+* Add the following inside the *activity* tag, assuming your deeplink URL scheme is myapp://
 ```xml
     <intent-filter>
         <action android:name="android.intent.action.VIEW" />
@@ -96,24 +94,23 @@ In this approach, you use a subclass of the default *UnityPlayerActivity*, which
     </intent-filter>
 ```
 
-* Optional: by default, *MyUnityPlayerActivity* calls a Unity script method `onDeeplink` on a game object called *UnityDeeplinks*. If you wish to change the name of the object or method, you should edit *Assets/UnityDeeplinks/Android/MyUnityPlayerActivity.java*, change the values of the `gameObject` and/or `deeplinkMethod` static properties and rebuild the *UnityDeeplinks.jar* file as instructed below
+* Notes:
+ * If you already subclassed your Unity activity, merge the code from within *MyUnityPlayerActivity* into your existing subclass
+ * Optional: by default, *MyUnityPlayerActivity* calls a Unity script method `onDeeplink` on a game object called *UnityDeeplinks*. If you wish to change the name of the object or method, you should edit *Assets/UnityDeeplinks/Android/MyUnityPlayerActivity.java*, change the values of the `gameObject` and/or `deeplinkMethod` static properties and rebuild the *UnityDeeplinks.jar* file as instructed below
 
-### Alternative 2: Adding a Deeplink Activity
-In this approach, a second activity with deeplink-handling code is added to the Unity project, without subclassing the default activity. Use this is case where option #1 is not acceptable (code is too complex, not under your control, cannot be subclassed, etc)
-
-* Add the following activity to your Assets/Plugins/Android/AndroidManifest.xml, assuming your deeplink URL scheme is myapp://
-```xml
-<activity android:name="com.trophit.DeeplinkActivity" android:exported="true">
-	<intent-filter>
-		<action android:name="android.intent.action.VIEW" />
-		<category android:name="android.intent.category.DEFAULT" />
-		<category android:name="android.intent.category.BROWSABLE" />
-		<data android:scheme="myapp" />
- 	</intent-filter>
-</activity>
+### Why not handle deeplinks in a second activity?
+Some might suggest having a "side-activity" e.g. *MyDeeplinkActivity* to handle the deeplink and start the main Unity player activity. This way, the main Unity player activity remains clean of "outside code", right? Wrong, expect an error message in LogCat:
+```
+Native libraries not loaded - dropping message for ...
 ```
 
-* Optional: by default, *DeeplinkActivity* calls a Unity script method `onDeeplink` on a game object called *UnityDeeplinks*. If you wish to change the name of the object or method, you should edit *Assets/UnityDeeplinks/Android/DeeplinkActivity.java*, change the values of the `gameObject` and/or `deeplinkMethod` static properties and rebuild the *UnityDeeplinks.jar* file as instructed below
+Here's why - consider the Unity app is currently not running. Then:
+* A deeplink gets activated
+* MyDeeplinkActivity starts
+* Tries to access the UnityPlayer object in order to send a message to a Unity script with the deeplink information
+* At this point, since the Unity native libraries not yet initialized, the call would fail with the mentioned error
+
+Bottom line: you need the Unity player activity initialized in order to call Unity functions from native code. The only way to handle the scenario above would be to have the Unity player activity itself handle the deeplink. Unity will make sure it's initialized prior to the call.
 
 ### Building the UnityDeeplinks.jar file
 Only perform this step if you made changes to any .java file under *Assets/UnityDeeplinks/Android/* or would like to rebuild it using an updated version of Unity classes, Android SDK, JDK and so on.
@@ -171,37 +168,38 @@ UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityD
 ## AppsFlyer
 AppsFlyer already provides some implementation for iOS and Android to handle deeplinks. However, it does not behave consistently for iOS and Android when a deeplink is activated:
 * For iOS, it triggers the *onAppOpenAttribution* method in the *AppsFlyerTrackerCallbacks* script
+* For iOS, it does not handle Universal Links (in AppsFlyer SDK v4.10 or lower)
 * For Android, it does not trigger any Unity script method
 
-Fortunately, AppsFlyer provides an implementation similar to [Alternative #2](#alternative-2-adding-a-deeplink-activity) above for Android, so in order to make AppsFlyer behave consistently for Android, we simply need to add some code to their class and rebuild their native .jar file using tools they provide:
-* First, ensure you have the [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) integrated including the deeplinking configuration
-* Ensure you have your URL schemes or Universal Links set up
-* Next, ensure you call `AppsFlyer.getConversionData();` in your AppsFlyer iOS startup script, right after `setAppId`:
+We can complement AppsFlyer's plugin and ensure the same trigger is added for Android:
+
+* Do NOT implement the AppsFlyer deeplinking configuration as the guide suggests (it uses the concept of a second activity to trigger deeplinks, which we've [discussed earlier](#asdf)
+* For iOS, call `AppsFlyer.getConversionData();` in your AppsFlyer startup script, right after `setAppId`:
 ```cs
 #if UNITY_IOS
 AppsFlyer.setAppID ("123456789");
 AppsFlyer.getConversionData();
 // ...
 ```
-* Add the following to *Assets/Plugins/Android/src/GetDeepLinkingActivity.java* inside `onCreate` right after `this.starActivity(newIntent)` and right before `finish`:
+* For Android, modify *Assets/UnityDeeplinks/Android/MyUnityPlayerActivity.java*'s `onDeeplink` method:
 ```java
-// this.startActivity(newIntent);
-String deeplink = getIntent().getDataString();
-if (deeplink != null) {
-    try {
-        org.json.JSONObject jo = new org.json.JSONObject();
-        jo.put("link", getIntent().getDataString());
-        com.unity3d.player.UnityPlayer.UnitySendMessage("AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
-    } catch (org.json.JSONException ex) {
-        Log.e(TAG, "Unable to send deeplink to Unity", ex);
+protected void onDeeplink(Intent intent) {
+    if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        String deeplink = intent.getDataString();
+        if (deeplink != null) {
+            try {
+                org.json.JSONObject jo = new org.json.JSONObject();
+                jo.put("link", getIntent().getDataString());
+                com.unity3d.player.UnityPlayer.UnitySendMessage(
+		    "AppsFlyerTrackerCallbacks", "onAppOpenAttribution", jo.toString());
+            } catch (org.json.JSONException ex) {
+                Log.e(TAG, "Unable to send deeplink to Unity", ex);
+            }
+	}
     }
 }
-// finish()
 ```
-* Edit *Assets/Plugins/Android/src/build_plugin_jar.sh*
-* Ensure, [like with UnityDeeplink's *build_jar.sh*](#building-the-unitydeeplinksjar-file) that all paths are set correctly
-* Run the build script, which should rebuild *Assets/Plugins/Android/AppsFlyerAndroidPlugin.jar*
-`./build_plugin_jar.sh`
+* Rebuild the UnityDeeplinks .jar, [as explained above](#building-the-unitydeeplinksjar-file)
 
 * Finally, implement your `AppsFlyerTrackerCallbacks.onAppOpenAttribution` method as needed. Upon deeplink activation on iOS or Android, it receives a JSON string in the format:
 `{"link":"deeplink url comes here"}`
