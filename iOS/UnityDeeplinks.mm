@@ -34,6 +34,25 @@ extern "C" {
 
 
 
+@interface UnityDeeplinksAppController : UnityAppController
+{
+}
+// Temporary properties to store any deeplink information from UIApplicationDelegate.
+// We use those only in case the UIApplicationDelegate started before the Unity controllers,
+// which occurs when a deeplink is activated while the Unity app is not running:
+@property id annotation;
+@property NSString* sourceApplication;
+@property NSDictionary* options;
+@property NSURL* deeplink;
+
+// Properties that hold the Unity object/method name to call upon deeplink:
+@property NSString* gameObjectName;
+@property NSString* deeplinkMethodName;
+
+@end
+
+
+
 @implementation UnityDeeplinksNotificationObserver
 
 + (UnityDeeplinksNotificationObserver*)instance {
@@ -52,21 +71,51 @@ extern "C" {
         NSLog(@"UnityDeeplinks: unexpected missing url in kUnityOnOpenURL notification");
         return;
     }
-    UnityDeeplinks_dispatch([url absoluteString]);
+    [self dispatch:[url absoluteString]];
 }
 
 - (void)onOpenURL:(NSNotification *)notification {
     [self onNotification:notification];
 }
 
+
+
+- (void)dispatch:(NSString*)message {
+    UnityDeeplinksAppController* ac = (UnityDeeplinksAppController*)GetAppController();
+    const char* name = (const char*) [ac.gameObjectName UTF8String];
+    const char* level = (const char*) [ac.deeplinkMethodName UTF8String];
+    const char* code = (const char*) [message UTF8String];
+    UnitySendMessage(name, level, code);
+}
+
+
 @end
 
 
 
-@implementation UnityAppController (UnityDeeplinks)
+@implementation UnityDeeplinksAppController
 
+// iOS >= 9.0
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options {
+    NSString *sourceApplication = options[UIApplicationOpenURLOptionsSourceApplicationKey];
+    self.options = options;
+    return [self application:app openURL:url sourceApplication:sourceApplication annotation:[NSDictionary dictionary]];
+}
+
+
+
+// iOS < 9.0
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    self.deeplink = url;
+    self.sourceApplication = sourceApplication;
+    self.annotation = annotation;
+    return [super application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
+}
+
+
+
+// Universal links:
 - (BOOL)application:(UIApplication *)application continueUserActivity:(nonnull NSUserActivity *)userActivity restorationHandler:(nonnull void (^)(NSArray * _Nullable))restorationHandler {
-    
     // App was opened from a Universal Link
     if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         [self application:application openURL:userActivity.webpageURL sourceApplication:nil annotation:[NSDictionary dictionary]];
@@ -74,7 +123,12 @@ extern "C" {
     return YES;
 }
 
+
 @end
+
+
+// Tell Unity to use UnityDeeplinksAppController as the main app controller:
+IMPL_APP_CONTROLLER_SUBCLASS(UnityDeeplinksAppController)
 
 
 
@@ -85,31 +139,34 @@ extern "C" {
     
     
     void UnityDeeplinks_init(const char* gameObject, const char* deeplinkMethod) {
+        UnityDeeplinksAppController* ac = (UnityDeeplinksAppController*)GetAppController();
+        ac.gameObjectName = gameObjectName;
         if (gameObject != nil) {
             NSString* gameObjectStr = [NSString stringWithCString:gameObject encoding:NSUTF8StringEncoding];
             if ([gameObjectStr length] > 0)
-                gameObjectName = gameObjectStr;
+            ac.gameObjectName = gameObjectStr;
         }
+        
+        ac.deeplinkMethodName = deeplinkMethodName;
         if (deeplinkMethod != nil) {
             NSString* deeplinkMethodStr = [NSString stringWithCString:deeplinkMethod encoding:NSUTF8StringEncoding];
             if ([deeplinkMethodStr length] > 0)
-                deeplinkMethodName = deeplinkMethodStr;
+            ac.deeplinkMethodName = deeplinkMethodStr;
         }
         UnityRegisterAppDelegateListener([UnityDeeplinksNotificationObserver instance]);
+        
+        // During init, it's possible that the UIApplicationDelegate already started via a deeplink
+        // and stored its data in temporary properties (in case the app was not previously running).
+        // If so, handle the deeplink as soon as possible:
+        if (ac.deeplink != nil) {
+            NSURL* deeplink = ac.deeplink;
+            ac.deeplink = nil;
+            [ac application:[UIApplication sharedApplication] openURL:deeplink options:ac.options];
+        }
+        
     }
     
     
-    
-    void UnityDeeplinks_dispatch(NSString* message) {
-        const char* name = (const char*) [gameObjectName UTF8String];
-        const char* level = (const char*) [deeplinkMethodName UTF8String];
-        const char* code = (const char*) [message UTF8String];
-        NSLog(@"UnityDeeplinks: Dispatching %@ (%@)",
-              [NSString stringWithCString:level encoding:NSUTF8StringEncoding],
-              [NSString stringWithCString:code encoding:NSUTF8StringEncoding]
-              );
-        UnitySendMessage(name, level, code);
-    }
     
     
 }
