@@ -12,61 +12,65 @@ This is NOT a TROPHiT SDK - this repo is an open-source contribution to develope
 * Tested with [Adjust Unity SDK](https://github.com/adjust/unity_sdk) v4.10.0
 * Also enables Adjust's SDK to handle iOS Universal Links
 * Assuming you already integrated the Adjust SDK, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```cs
-public void onDeeplink(string deeplink) {
-    AdjustEvent adjustEvent = new AdjustEvent("abc123");
-    adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
-    Adjust.trackEvent(adjustEvent);
-}
-```
+
+ ```cs
+ public void onDeeplink(string deeplink) {
+     AdjustEvent adjustEvent = new AdjustEvent("abc123");
+     adjustEvent.addCallbackParameter("deeplink", deeplink); // optional, for callback support
+     Adjust.trackEvent(adjustEvent);
+ }
+ ```
 * Add the following code marked `add this` to *Assets/UnitDeeplinks/iOS/UnityDeeplinks.mm*:
-```objc
-#import "Adjust.h"  // <==== add this
-...
 
-- (void)onNotification:(NSNotification*)notification {
-    if (![kUnityOnOpenURL isEqualToString:notification.name]) return;
-    ...
-    [Adjust appWillOpenUrl:url]; // <==== add this right before UnityDeeplinks_dispatch
-    UnityDeeplinks_dispatch([url absoluteString]);
-}
-
-```
+ ```objc
+ #import "Adjust.h"  // <==== add this
+ ...
+ 
+ - (void)onNotification:(NSNotification*)notification {
+     if (![kUnityOnOpenURL isEqualToString:notification.name]) return;
+     ...
+     [Adjust appWillOpenUrl:url]; // <==== add this right before UnityDeeplinks_dispatch
+     UnityDeeplinks_dispatch([url absoluteString]);
+ }
+ ```
 
 #### Example: Track Deeplinks with Tune
 * Tested with [Tune Unity Plugin](https://developers.tune.com/sdk/unity-quick-start/) v4.3.1
 * Also enables Tune's Plugin to handle iOS Universal Links
 * Assuming you already integrated the Tune Plugin, just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```cs
-public void onDeeplink(string deeplink) {
-   TuneEvent event = new TuneEvent("deeplink");
-   event.attribute1 = deeplink;
-   Tune.MeasureEvent(event);
-}
-```
+
+ ```cs
+ public void onDeeplink(string deeplink) {
+    TuneEvent event = new TuneEvent("deeplink");
+    event.attribute1 = deeplink;
+    Tune.MeasureEvent(event);
+ }
+ ```
 
 #### Example: Track Deeplinks with Kochava
 * Also enables Kochava's SDK to handle iOS Universal Links
 * Assuming you already integrated the [Kochava Unity SDK](http://support.kochava.com/sdk-integration/unity-sdk-integration), just implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```cs
-public void onDeeplink(string deeplink) {
-   Kochava.DeeplinkEvent(deeplink, null);
-}
-```
+
+ ```cs
+ public void onDeeplink(string deeplink) {
+    Kochava.DeeplinkEvent(deeplink, null);
+ }
+ ```
 
 #### Example: Track Deeplinks with AppsFlyer
 * Tested with [AppsFlyer Unity SDK](https://support.appsflyer.com/hc/en-us/articles/213766183-Unity) v4.10.1, v4.11
 * Requires some [customizations](#appsflyer)
 * Also enables AppsFlyer's SDK to handle iOS Universal Links (for AppsFlyer Unity SDK 4.10 or earlier)
 * Implement `onDeeplink` in *UnityDeeplinks.cs* as follows:
-```cs
-public void onDeeplink(string deeplink) {
-    System.Collections.Generic.Dictionary<string, string> values =
-        new System.Collections.Generic.Dictionary<string, string>();
-    values.Add("link", deeplink);
-    AppsFlyer.trackRichEvent("deeplink", values);
-}
-```
+
+ ```cs
+ public void onDeeplink(string deeplink) {
+     System.Collections.Generic.Dictionary<string, string> values =
+         new System.Collections.Generic.Dictionary<string, string>();
+     values.Add("link", deeplink);
+     AppsFlyer.trackRichEvent("deeplink", values);
+ }
+ ```
 
 # Integration
 * Clone/download the repository
@@ -78,22 +82,23 @@ Subclass the default *UnityPlayerActivity* in order to add deeplink-handling cod
 
 * Replace the default UnityPlayerActivity in your Assets/Plugins/Android/AndroidManifest.xml with com.trophit.MyUnityPlayerActivity:
 
-```xml
-<!--
-<activity android:name="com.unity3d.player.UnityPlayerActivity" ...
--->
-<activity android:name="com.trophit.MyUnityPlayerActivity" ...
-```
+ ```xml
+ <!--
+ <activity android:name="com.unity3d.player.UnityPlayerActivity" ...
+ -->
+ <activity android:name="com.trophit.MyUnityPlayerActivity" ...
+ ```
 
 * Add the following inside the same *activity* tag, assuming your deeplink URL scheme is myapp://
-```xml
-<intent-filter>
-    <action android:name="android.intent.action.VIEW" />
-    <category android:name="android.intent.category.DEFAULT" />
-    <category android:name="android.intent.category.BROWSABLE" />
-    <data android:scheme="myapp" />
-</intent-filter>
-```
+
+ ```xml
+ <intent-filter>
+     <action android:name="android.intent.action.VIEW" />
+     <category android:name="android.intent.category.DEFAULT" />
+     <category android:name="android.intent.category.BROWSABLE" />
+     <data android:scheme="myapp" />
+ </intent-filter>
+ ```
 
 * Notes:
  * If you already subclassed your Unity activity, merge the code from within *MyUnityPlayerActivity* into your existing subclass
@@ -121,11 +126,12 @@ Only perform this step if you made changes to any .java file under *Assets/Unity
 * Ensure UNITY_LIBS points to the Unity classes.jar file in your development environment
 
 #### Build instructions
-* Run the build script:
+Run the build script:
 ```
 cd MY_UNITY_PROJECT_ROOT/Assets/UnityDeeplinks/Android
 ./build_jar.sh
 ```
+
 Example output:
 ```
 Compiling ...
@@ -137,9 +143,10 @@ adding: com/trophit/(in = 0) (out= 0)(stored 0%)
 adding: com/trophit/DeeplinkActivity.class(in = 2368) (out= 1237)(deflated 47%)
 adding: com/trophit/MyUnityPlayerActivity.class(in = 1504) (out= 789)(deflated 47%)
 ```
-This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Assets/UnityDeeplinks folder
 
-* Continue to build and test your Unity project as usual in order for any jar changes to take effect
+This creates/updates a *UnityDeeplinks.jar* file under your Unity project's Assets/UnityDeeplinks folder.
+
+Finally, continue to build and test your Unity project as usual in order for any jar changes to take effect
 
 ## iOS
 UnityDeeplinks implements a native plugin for iOS, initialized by *Assets/UnityDeeplinks/UnityDeeplinks.cs*. The plugin listens for URL/Univeral Link activations and relayes them to the Unity script for processing. It, too, uses a similar approach as the one used for Android: the main Unity app controller gets subclassed.
@@ -154,11 +161,12 @@ Also, like in the Android case, if the app is currently not running, we can't si
 ## Testing
 
 * Prepare a dummy web page that is accessible by your mobile device:
-```xml
-<body>
-<a href="myapp://?a=b">deeplink test</a>
-</body>
-```
+
+ ```xml
+ <body>
+ <a href="myapp://?a=b">deeplink test</a>
+ </body>
+ ```
 
 * Open the web page on the device browser and click the deeplink
 * The Unity app should open and the onDeeplink Unity script method should be invoked, performing whatever it is you designed it to perform
